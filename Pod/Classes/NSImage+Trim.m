@@ -153,14 +153,16 @@
 		rect.origin.y += crop.top;
 		rect.size.width -= crop.left + crop.right;
 		rect.size.height -= crop.top + crop.bottom;
-		
+
 		// Crop it
-        NSRect imageRect = NSMakeRect(0, 0, self.size.width, self.size.height);
-        CGImageRef cgImage = [self CGImageForProposedRect:&imageRect context:NULL hints:nil];
-        
-        CGImageRef newImage = CGImageCreateWithImageInRect(cgImage, rect);
-		
-        img = [[NSImage alloc] initWithCGImage:newImage size:rect.size];
+		NSImage *croppedImage = [[NSImage alloc] initWithSize:rect.size];
+        [croppedImage lockFocus];
+        [[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
+		NSRect imageRect = NSMakeRect(0, 0, rect.size.width, rect.size.height);
+
+        [img drawInRect:imageRect fromRect:rect operation:NSCompositeCopy fraction:1.0];
+        [croppedImage unlockFocus];
+		img = croppedImage;
 
 	}
     
